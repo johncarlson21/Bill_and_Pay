@@ -478,13 +478,13 @@ class Bill_N_Pay {
 	}
 	
 	function getPaymentsPull() {
-		$sql = "SELECT MAX(Created_Date) as cd FROM " . $this->db . ".Bill_and_Pay.Payment_Transactions WHERE Is_Processed=1 AND Is_From_BNP=1";
+		$sql = "SELECT MAX(Created_Date) as cd FROM " . $this->db . ".Bill_and_Pay.Payment_Transactions WHERE Is_From_BNP=1";
 		$last_update = $this->conn->prepare($sql);
 		$last_update->execute();
 		$dt = $last_update->fetch(PDO::FETCH_ASSOC);
 		$ld = $dt['cd'];
 		$last_update->closeCursor();
-		$bsql = "SELECT MAX(Batch_ID) as bi FROM " . $this->db . ".Bill_and_Pay.Payment_Transactions WHERE Is_Processed=1 AND Is_From_BNP=1";
+		$bsql = "SELECT MAX(Batch_ID) as bi FROM " . $this->db . ".Bill_and_Pay.Payment_Transactions WHERE Is_From_BNP=1";
 		$last_batch = $this->conn->prepare($bsql);
 		$last_batch->execute();
 		$bt = $last_batch->fetch(PDO::FETCH_ASSOC);
@@ -510,6 +510,7 @@ class Bill_N_Pay {
   </biller>
 </request>
 		';
+		//echo $xml . PHP_EOL;
 		$response = \Httpful\Request::post($this->uri)
 			->body($xml)
 			->sendsXml()

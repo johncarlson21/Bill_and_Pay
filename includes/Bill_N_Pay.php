@@ -519,10 +519,10 @@ class Bill_N_Pay {
 		$transactions = json_decode($response, true);
 		//echo print_r($transactions['biller']);
 		if (($transactions && isset($transactions['biller']['paymentinfo']['payment']))) {
-			$this->logEvent($xml, $response, $transactions, "", "", "null", 'getPayments', 0, 1);
+			$this->logEvent($xml, $response, $transactions, "", "", "null", 'getPayments', 1, 0);
 			return $transactions['biller']['paymentinfo']['payment'];
 		} else {
-			$this->logEvent($xml, $response, $transactions, "", "", "null", 'getPayments', 1, 0);
+			$this->logEvent($xml, $response, $transactions, "", "", "null", 'getPayments', 0, 1);
 			return false;
 		}
 		

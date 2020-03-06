@@ -398,8 +398,8 @@ class Bill_N_Pay {
 			"ponumber" => "",
 			"duedate" => $inv['Due_Date'],
 			"startdate" => $inv['Start_Date'],
-			"enddate" => $inv['End_Date'],
-			"shipdate" => $inv['Ship_Date'],
+			//"enddate" => $inv['End_Date'],
+			//"shipdate" => $inv['Ship_Date'],
 			"salestax" => $inv['Sales_Tax'],
 			"terms" => $inv['Terms'],
 			"billingaddress" => array(

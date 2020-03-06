@@ -7,6 +7,10 @@ require("./includes/Bill_N_Pay.php");
 
 $BNP = new Bill_N_Pay;
 
+$count = $BNP->getCustomersToAddCount();
+print_r($count);
+
+
 /*
 $customer = $BNP->getCustomerById(3);
 print_r($customer);

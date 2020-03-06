@@ -15,7 +15,7 @@ print_r($customer);
 $BNP->preparePull();
 
 // get customers to add
-$date = "2019-01-01";
+$date = "2000-01-12";
 $page = 0;
 $rows = 500;
 $customers = $BNP->getCustomersPull($date, $page, $rows);
@@ -25,6 +25,7 @@ $pages = ceil($records / $rows);
 //print_r("Total Records: " . $records . "; Pages: " . $pages . "\n"); //exit;
 
 
+//exit;
 $count = 0;
 //echo "<pre>";
 while($page < $pages) {
@@ -34,16 +35,16 @@ while($page < $pages) {
 		echo ($row['name'] . " - " . $row['id']);
 		//print_r($row);
 		//print_r("\n");
-		echo ("\n");
+		echo PHP_EOL;
 		$count++;
 		//if ($count == 51) { exit; }
 	}
-	print_r("Page: " . $page . "; Count: " . $count . "\n");
+	print_r("Page: " . $page . "; Count: " . $count . PHP_EOL);
 	$page++;
 	sleep(1);
 }
-print_r("Total Records: " . $records . "; Pages: " . $pages . "\n");
-print_r("Total Added: " . $count . "\n");
+print_r("Total Records: " . $records . "; Pages: " . $pages . PHP_EOL);
+print_r("Total Added: " . $count . PHP_EOL);
 //echo "</pre>";
 
 

@@ -388,6 +388,48 @@ class Bill_N_Pay {
 		return $fullInvoices;
 	}
 	
+	function getInvoicesForDelete() {
+		$sql = "SELECT * FROM " . $this->db . ".Bill_and_Pay.Invoice_Header WHERE Is_Active = 1 AND Is_Sent = 0 AND Is_Delete = 1";
+		$getInvoices = $this->conn->prepare($sql);
+		$getInvoices->execute();
+		$invoices = $getInvoices->fetchAll(PDO::FETCH_ASSOC);
+		$getInvoices->closeCursor();
+		return $invoices;
+	}
+	
+	function deleteInvoice($inv) {
+		$invnum = trim($inv['Invoice_Number']);
+		$xml = '<?xml version="1.0"?> <request> <response> <type>json</type> </response> <biller> <authenticate> <id>' . $this->user . '</id> <password>' . $this->pass . '</password> </authenticate> <invoiceupdate> <id>' . $invnum . '</id> <deleted>1</deleted> </invoiceupdate> </biller> </request>';
+		$response = \Httpful\Request::post($this->uri)
+			->body($xml)
+			->sendsXml()
+			->expectsJson()
+			//->autoParse(false)
+			->send();
+		//print_r($response); print(PHP_EOL);
+		$body = json_decode($response, true);
+		
+		if (isset($body['biller']['invoiceupdate']['error'])) {
+			// problem
+			$params = array();
+			$sql = "UPDATE " . $this->db . ".Bill_and_Pay.Invoice_Header SET Is_Sent = 1, Is_Error = 1 WHERE Invoice_Header_ID=" . $inv['Invoice_Header_ID'];
+			$prepare = $this->conn->prepare($sql);
+			$prepare->execute($params);
+			$prepare->closeCursor();
+			$this->logEvent($xml, $response, $body, "", "", $body['biller']['invoiceupdate']['error']['number'], 'deleteInvoice', 0, 1);
+			return "Error removing invoice #" . $invnum;
+		} else {
+			// good to go
+			$params = array("");
+			$sql = "UPDATE " . $this->db . ".Bill_and_Pay.Invoice_Header SET Is_Sent = 1, Is_Error = 0 WHERE Invoice_Header_ID=" . $inv['Invoice_Header_ID'];
+			$prepare = $this->conn->prepare($sql);
+			$prepare->execute($params);
+			$prepare->closeCursor();
+			$this->logEvent($xml, $response, $body, "", "", "null", 'deleteInvoice', 1, 0);
+			return "Inivoice " . $invnum . " was removed!";
+		}
+	}
+	
 	function prepareInvoice($inv) {
 		$tempArr = array(
 			"Invoice_Header_ID" => $inv['Invoice_Header_ID'],
@@ -395,7 +437,7 @@ class Bill_N_Pay {
 			"customer" => array("id" => $inv['Customer_Number']),
 			"createddate" => $inv['Created_Date'],
 			"number" => $inv['Invoice_Number'],
-			"ponumber" => "",
+			"ponumber" => $inv['PO_Number'],
 			"duedate" => $inv['Due_Date'],
 			"startdate" => $inv['Start_Date'],
 			//"enddate" => $inv['End_Date'],

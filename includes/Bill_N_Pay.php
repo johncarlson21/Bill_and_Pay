@@ -477,7 +477,7 @@ class Bill_N_Pay {
 			"description" => $item['Item_Description'],
 			"other1" => $item['Other_1'],
 			"other2" => $item['Other_2'],
-			"other3" => "",
+			"other3" => $item['Other_3'],
 			"servicedate" => $item['Service_Date'],
 			"displayorder" => $item['Display_Order']
 		);

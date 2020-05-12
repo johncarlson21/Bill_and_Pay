@@ -343,7 +343,7 @@ class Bill_N_Pay {
 			//print_r($prepare->errorInfo());
 			$prepare->closeCursor();
 			// log event
-			$this->logEvent($xml, $response, $body, $customer['Customer_ID'], "", $body['biller']['customeradd']['error']['number'], 'addCustomer', 0, 1);
+			$this->logEvent($xml, $response, $body, $customer['Customer_ID'], "", $body['biller']['customeradd']['error']['number'], 'addCustomer', 0, 1, $customer['Process_Log_ID']);
 		} else { // we have a successful addition
 			// print_r("we are setting this customer");
 			$this->conn->exec('SET ANSI_WARNINGS OFF');
@@ -360,7 +360,7 @@ class Bill_N_Pay {
 			//print_r($prepare->errorInfo());
 			$prepare->closeCursor();
 			// log event
-			$this->logEvent($xml, $response, $body, $customer['Customer_ID'], "", "null", 'addCustomer', 1, 0);
+			$this->logEvent($xml, $response, $body, $customer['Customer_ID'], "", "null", 'addCustomer', 1, 0, $customer['Process_Log_ID']);
 		}
 		//print_r($body); //exit;
 	}
@@ -484,7 +484,7 @@ class Bill_N_Pay {
 		return $tempArr;
 	}
 	
-	function addInvoice($xml, $invID) {
+	function addInvoice($xml, $invID, $batchID) {
 		$response = \Httpful\Request::post($this->uri)
 			->body($xml)
 			->sendsXml()
@@ -499,7 +499,7 @@ class Bill_N_Pay {
 			$prepare->execute();
 			$prepare->closeCursor();
 			// log event
-			$this->logEvent($xml, $response, $body, "", $invID, $body['biller']['invoiceadd']['error']['number'], 'addInvoice', 0, 1);
+			$this->logEvent($xml, $response, $body, "", $invID, $body['biller']['invoiceadd']['error']['number'], 'addInvoice', 0, 1, $batchID);
 		} else { // we have a successful addition
 			$this->conn->exec('SET ANSI_WARNINGS OFF');
 			$this->conn->exec('SET ANSI_PADDING ON');
@@ -514,7 +514,7 @@ class Bill_N_Pay {
 			$prepare->execute($params);
 			$prepare->closeCursor();
 			// log event
-			$this->logEvent($xml, $response, $body, "", $invID, "null", 'addInvoice', 1, 0);
+			$this->logEvent($xml, $response, $body, "", $invID, "null", 'addInvoice', 1, 0, $batchID);
 		}
 		//print_r($body); //exit;
 	}
@@ -676,7 +676,7 @@ class Bill_N_Pay {
 
 	}
 	
-	function logEvent($xml, $response, $body, $customer_id="", $invoice_header_id="", $error_num="", $apiCall, $active=1, $error=0) {
+	function logEvent($xml, $response, $body, $customer_id="", $invoice_header_id="", $error_num="", $apiCall, $active=1, $error=0, $batchId = 0) {
 		
 		$params = array(
 			$apiCall, // what call we are using ( addUser )
@@ -686,11 +686,13 @@ class Bill_N_Pay {
 			$xml, // sent xml
 			$response, // response body
 			$customer_id, // if error use system customer_id
-			$invoice_header_id // if error for invoice use system invoice_header_id
+			$invoice_header_id, // if error for invoice use system invoice_header_id
+			$batchId
 		);
 		$sql = "INSERT INTO " . $this->db . ".Bill_and_Pay.XML_Log 
-		(API_Call, Is_Active, Is_Error, BNP_Status, Send_XML_Code, Return_XML_Code, Customer_ID, Invoice_Header_ID) 
-		VALUES (?,?,?,?,?,?,?,?)
+		(API_Call, Is_Active, Is_Error, BNP_Status, Send_XML_Code, Return_XML_Code, Customer_ID, Invoice_Header_ID, Batch_ID) 
+		(API_Call, Is_Active, Is_Error, BNP_Status, Send_XML_Code, Return_XML_Code, Customer_ID, Invoice_Header_ID, Batch_ID) 
+		VALUES (?,?,?,?,?,?,?,?,?)
 		";
 		try {
 			$this->conn->exec('SET ANSI_WARNINGS OFF');

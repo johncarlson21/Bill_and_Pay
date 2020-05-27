@@ -690,10 +690,7 @@ class Bill_N_Pay {
 			$batchId
 		);
 		$sql = "INSERT INTO " . $this->db . ".Bill_and_Pay.XML_Log 
-		(API_Call, Is_Active, Is_Error, BNP_Status, Send_XML_Code, Return_XML_Code, Customer_ID, Invoice_Header_ID, Batch_ID) 
-		(API_Call, Is_Active, Is_Error, BNP_Status, Send_XML_Code, Return_XML_Code, Customer_ID, Invoice_Header_ID, Batch_ID) 
-		VALUES (?,?,?,?,?,?,?,?,?)
-		";
+		(API_Call, Is_Active, Is_Error, BNP_Status, Send_XML_Code, Return_XML_Code, Customer_ID, Invoice_Header_ID, Batch_ID) VALUES (?,?,?,?,?,?,?,?,?)";
 		try {
 			$this->conn->exec('SET ANSI_WARNINGS OFF');
 			$this->conn->exec('SET ANSI_PADDING ON');

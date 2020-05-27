@@ -47,6 +47,7 @@ $z = 1;
 foreach ($invoices as $row) {
 	$invHeadID = $row['Invoice_Header_ID'];
 	unset($row['Invoice_Header_ID']);
+	$procId = $row['Process_Log_ID'];
 	unset($row['Process_Log_ID']);
 	$requestArray = array(
 		"response" => array( "type" => "json" ),
@@ -57,7 +58,7 @@ foreach ($invoices as $row) {
 	);
 	
 	$xml = \LaLit\Array2XML::createXML("request", $requestArray);
-	$BNP->addInvoice($xml->saveXML(), $invHeadID, $row['Process_Log_ID']);
+	$BNP->addInvoice($xml->saveXML(), $invHeadID, $procId);
 	echo "Invoice Added: " . $z . "         \r";
 	$z++;
 }
